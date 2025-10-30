@@ -1,0 +1,23 @@
+{
+  "appId": "com.autoimage.desktop",
+  "productName": "AutoImage",
+  "files": [
+    "electron/**/*",
+    "package.json"
+  ],
+  "directories": {
+    "output": "release",
+    "buildResources": "build"
+  },
+  "mac": {
+    "category": "public.app-category.graphics-design",
+    "target": ["dmg"]
+  },
+  "win": {
+    "target": ["nsis"]
+  },
+  "linux": {
+    "category": "Graphics",
+    "target": ["AppImage"]
+  }
+}

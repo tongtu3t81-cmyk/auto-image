@@ -3,6 +3,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { GoogleGenAI } from "@google/genai";
 
+declare global {
+  interface Window {
+    electronAPI?: {
+      saveImage: (payload: { dataUrl: string; defaultFileName: string }) => Promise<{
+        canceled: boolean;
+        filePath?: string;
+        error?: string;
+      }>;
+    };
+  }
+}
+
 interface PromptItem {
   stt: string;
   text: string;
@@ -204,7 +216,29 @@ const App: React.FC = () => {
     setIsRunning(false);
   };
 
-  const handleDownload = (stt: string, variant: number, imageUrl: string) => {
+  const handleDownload = async (stt: string, variant: number, imageUrl: string) => {
+    if (window.electronAPI?.saveImage) {
+      try {
+        const result = await window.electronAPI.saveImage({
+          dataUrl: imageUrl,
+          defaultFileName: `${stt}-${variant}.jpeg`,
+        });
+
+        if (result?.canceled) {
+          addLog(`⚠️ Đã hủy lưu ảnh ${stt}-${variant}.`);
+        } else if (result?.error) {
+          addLog(`❌ Không thể lưu ảnh ${stt}-${variant}: ${result.error}`);
+        } else if (result?.filePath) {
+          addLog(`💾 Đã lưu ảnh ${stt}-${variant} tại ${result.filePath}`);
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        addLog(`❌ Lỗi khi lưu ảnh ${stt}-${variant}: ${message}`);
+        alert(`Không thể lưu ảnh: ${message}`);
+      }
+      return;
+    }
+
     const link = document.createElement('a');
     link.href = imageUrl;
     link.download = `${stt}-${variant}.jpeg`;

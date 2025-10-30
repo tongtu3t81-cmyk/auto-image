@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:prepare": "npm run build && node electron/scripts/prepare-dist.mjs",
+    "electron:dev": "npm run electron:prepare && electron .",
+    "electron:build": "npm run electron:prepare && electron-builder"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -17,6 +20,9 @@
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  }
+    "vite": "^6.2.0",
+    "electron": "^33.3.0",
+    "electron-builder": "^25.1.7"
+  },
+  "main": "electron/main.js"
 }
